@@ -13,48 +13,53 @@
                 ?>
 
                 <?php if ($role == 'Administrador'): ?>
-                    <li>
-                        <a href="usuarios" class="waves-effect">
-                            <i class="ri-user-line"></i>
-                            <span>Usuarios</span>
-                        </a>
-                    </li>
+                <li>
+                    <a href="usuarios" class="waves-effect">
+                        <i class="ri-user-line"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
 
-                    <li>
-                        <a href="inicio" class="waves-effect">
-                            <i class="ri-map-pin-line"></i>
-                            <span>Inicio</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="proveedores" class="waves-effect">
-                            <i class="ri-government-line"></i>
-                            <span>Proveedores</span>
-                        </a>
-                    </li>
+                <li>
+                    <a href="inicio" class="waves-effect">
+                        <i class="ri-map-pin-line"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="proveedores" class="waves-effect">
+                        <i class="ri-government-line"></i>
+                        <span>Proveedores</span>
+                    </a>
+                </li>
 
-                      <li>
-                        <a href="productos" class="waves-effect">
-                            <i class="ri-government-line"></i>
-                            <span>Productos</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                <li>
+                    <a href="productos" class="waves-effect">
+                        <i class="ri-government-line"></i>
+                        <span>Productos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="compras" class="waves-effect">
+                        <i class="ri-shopping-cart-line"></i>
+                        <span>Compras</span>
+                    </a>
+                    <?php endif; ?>
 
-                <?php if ($role == 'Administrador' || $role == 'Jefe de cuartel' || $role == 'Jefe de manzana'): ?>
-                    <li>
-                        <a href="reportes" class="waves-effect">
-                            <i class="ri-file-list-line"></i>
-                            <span>Reportes</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="captura" class="waves-effect">
-                            <i class="ri-file-list-line"></i>
-                            <span>Captura</span>
-                        </a>
-                    </li>
-                    
+                    <?php if ($role == 'Administrador' || $role == 'Jefe de cuartel' || $role == 'Jefe de manzana'): ?>
+                <li>
+                    <a href="reportes" class="waves-effect">
+                        <i class="ri-file-list-line"></i>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="captura" class="waves-effect">
+                        <i class="ri-file-list-line"></i>
+                        <span>Captura</span>
+                    </a>
+                </li>
+
                 <?php endif; ?>
 
                 <li>

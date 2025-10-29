@@ -1,5 +1,5 @@
 <?php
-session_start();    
+session_start();
 ?>
 
 <!doctype html>
@@ -29,9 +29,10 @@ session_start();
         if (isset($_GET["url"])) {
             if (
                 $_GET["url"] == "usuarios" ||
-                $_GET["url"] == "inicio" || 
-                 $_GET["url"] == "proveedores" ||
-                 $_GET["url"] == "productos" ||              
+                $_GET["url"] == "inicio" ||
+                $_GET["url"] == "proveedores" ||
+                $_GET["url"] == "productos" ||
+                $_GET["url"] == "compras" ||
                 $_GET["url"] == "404" ||
                 $_GET["url"] == "login" ||
                 $_GET["url"] == "salir"
@@ -46,13 +47,12 @@ session_start();
 
         include "views/modules/footer.php";
         echo '</div>';
-    }else
-    {
+    } else {
         include "views/modules/login.php";
     }
     ?>
-     
-     <?php include "views/modules/js_modules.php"; ?>
+
+    <?php include "views/modules/js_modules.php"; ?>
 
 
 </body>

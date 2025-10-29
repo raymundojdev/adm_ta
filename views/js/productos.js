@@ -1,15 +1,31 @@
-/* ============================================
-   views/assets/js/productos.js
-   ============================================ */
+/* ==========================================================
+   views/assets/js/productos.js  (REEMPLAZA COMPLETO)
+   ========================================================== */
 
 // Utils
-function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
-function money(v){const n=Number(v||0); return n.toFixed(2);}
-function badgeActivo(v){return parseInt(v)===1?'<span class="badge bg-success">Sí</span>':'<span class="badge bg-secondary">No</span>';}
-function spinner(){return '<span class="spinner-border spinner-border-sm"></span>';}
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+function money(v) {
+  const n = Number(v || 0);
+  return n.toFixed(2);
+}
+function badgeActivo(v) {
+  return parseInt(v) === 1
+    ? '<span class="badge bg-success">Sí</span>'
+    : '<span class="badge bg-secondary">No</span>';
+}
+function spinner() {
+  return '<span class="spinner-border spinner-border-sm"></span>';
+}
 
 // Render
-function filaProducto(p, idx){
+function filaProducto(p, idx) {
   return `
     <tr data-row-id="${p.id}">
       <td>${idx}</td>
@@ -20,10 +36,14 @@ function filaProducto(p, idx){
       <td>${badgeActivo(p.activo)}</td>
       <td>
         <div class="btn-group">
-          <button class="btn btn-primary btn-sm btnEditarProducto" idProducto="${p.id}" data-bs-toggle="modal" data-bs-target="#modalEditarProducto">
+          <button class="btn btn-primary btn-sm btnEditarProducto" idProducto="${
+            p.id
+          }" data-bs-toggle="modal" data-bs-target="#modalEditarProducto">
             <i class="fas fa-pencil-alt"></i> Editar
           </button>
-          <button class="btn btn-danger btn-sm btnEliminarProducto" idProducto="${p.id}">
+          <button class="btn btn-danger btn-sm btnEliminarProducto" idProducto="${
+            p.id
+          }">
             <i class="fas fa-trash-alt"></i> Eliminar
           </button>
         </div>
@@ -31,32 +51,46 @@ function filaProducto(p, idx){
     </tr>`;
 }
 
-function renderPaginacion(page, pages){
+function renderPaginacion(page, pages) {
   let html = `<nav><ul class="pagination pagination-sm mb-0">`;
-  const prevDis = page<=1 ? "disabled" : "";
-  const nextDis = page>=pages ? "disabled" : "";
-  html += `<li class="page-item ${prevDis}"><a class="page-link" href="#" data-page="${page-1}">«</a></li>`;
-  const start = Math.max(1, page-2);
-  const end   = Math.min(pages, page+2);
-  for(let i=start;i<=end;i++){
-    html += `<li class="page-item ${i===page?'active':''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+  const prevDis = page <= 1 ? "disabled" : "";
+  const nextDis = page >= pages ? "disabled" : "";
+  html += `<li class="page-item ${prevDis}"><a class="page-link" href="#" data-page="${
+    page - 1
+  }">«</a></li>`;
+  const start = Math.max(1, page - 2);
+  const end = Math.min(pages, page + 2);
+  for (let i = start; i <= end; i++) {
+    html += `<li class="page-item ${
+      i === page ? "active" : ""
+    }"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
   }
-  html += `<li class="page-item ${nextDis}"><a class="page-link" href="#" data-page="${page+1}">»</a></li>`;
+  html += `<li class="page-item ${nextDis}"><a class="page-link" href="#" data-page="${
+    page + 1
+  }">»</a></li>`;
   html += `</ul></nav>`;
   $("#productosPagination").html(html);
 }
 
 // Estado
-const state = { page:1, per_page:20, busqueda:"", activo:"", proveedor_id:"" };
+const state = {
+  page: 1,
+  per_page: 20,
+  busqueda: "",
+  activo: "",
+  proveedor_id: "",
+};
 let debounceTimer = null;
 
 // Cargar lista
-function cargarLista(){
+function cargarLista() {
   const tbody = $("#tablaProductos tbody");
-  tbody.html(`<tr><td colspan="7" class="text-center py-3">${spinner()} Cargando...</td></tr>`);
+  tbody.html(
+    `<tr><td colspan="7" class="text-center py-3">${spinner()} Cargando...</td></tr>`
+  );
 
   const fd = new FormData();
-  fd.append("__action","listar");
+  fd.append("__action", "listar");
   fd.append("page", state.page);
   fd.append("per_page", state.per_page);
   fd.append("busqueda", state.busqueda);
@@ -70,51 +104,62 @@ function cargarLista(){
     processData: false,
     contentType: false,
     dataType: "json",
-    success: function(resp){
-      if(!resp.ok){ tbody.html(`<tr><td colspan="7" class="text-center text-danger">No se pudo cargar</td></tr>`); return; }
+    success: function (resp) {
+      if (!resp.ok) {
+        tbody.html(
+          `<tr><td colspan="7" class="text-center text-danger">No se pudo cargar</td></tr>`
+        );
+        return;
+      }
       tbody.empty();
-      const startIndex = (resp.page-1)*resp.per_page;
-      (resp.data||[]).forEach((p, i)=> tbody.append(filaProducto(p, startIndex+i+1)));
+      const startIndex = (resp.page - 1) * resp.per_page;
+      (resp.data || []).forEach((p, i) =>
+        tbody.append(filaProducto(p, startIndex + i + 1))
+      );
       renderPaginacion(resp.page, resp.pages);
       $("#totalProductosBadge").text(resp.total);
     },
-    error: function(){
-      tbody.html(`<tr><td colspan="7" class="text-center text-danger">Error de conexión</td></tr>`);
-    }
+    error: function () {
+      tbody.html(
+        `<tr><td colspan="7" class="text-center text-danger">Error de conexión</td></tr>`
+      );
+    },
   });
 }
 
-$(document).ready(function(){
-
+$(document).ready(function () {
   // Filtros
-  $("#busquedaProducto").on("input", function(){
+  $("#busquedaProducto").on("input", function () {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(()=>{
+    debounceTimer = setTimeout(() => {
       state.busqueda = this.value.trim();
       state.page = 1;
       cargarLista();
     }, 250);
   });
 
-  $("#filtroActivo, #filtroProveedor, #perPage").on("change", function(){
-    if(this.id==="perPage") state.per_page = parseInt(this.value,10)||20;
-    if(this.id==="filtroActivo") state.activo = this.value;
-    if(this.id==="filtroProveedor") state.proveedor_id = this.value;
+  $("#filtroActivo, #filtroProveedor, #perPage").on("change", function () {
+    if (this.id === "perPage") state.per_page = parseInt(this.value, 10) || 20;
+    if (this.id === "filtroActivo") state.activo = this.value;
+    if (this.id === "filtroProveedor") state.proveedor_id = this.value;
     state.page = 1;
     cargarLista();
   });
 
-  $("#productosPagination").on("click", ".page-link", function(e){
+  $("#productosPagination").on("click", ".page-link", function (e) {
     e.preventDefault();
-    const p = parseInt($(this).data("page"),10);
-    if(!isNaN(p) && p>=1){ state.page = p; cargarLista(); }
+    const p = parseInt($(this).data("page"), 10);
+    if (!isNaN(p) && p >= 1) {
+      state.page = p;
+      cargarLista();
+    }
   });
 
   // Obtener para editar
   $(".tablas").on("click", ".btnEditarProducto", function () {
     const idProducto = $(this).attr("idProducto");
     const fd = new FormData();
-    fd.append("__action","obtener");
+    fd.append("__action", "obtener");
     fd.append("idProducto", idProducto);
 
     $.ajax({
@@ -125,22 +170,24 @@ $(document).ready(function(){
       contentType: false,
       dataType: "json",
       success: function (r) {
-        if(!r){ return; }
+        if (!r) {
+          return;
+        }
         $("#idProducto").val(r["id"]);
         $("#editar_prod_nombre").val(r["nombre"]);
         $("#editar_prod_unidad_id").val(r["unidad_id"]);
         $("#editar_prod_costo_ref").val(r["costo_ref"]);
         $("#editar_prod_proveedor_id").val(r["proveedor_id"] ?? "");
-        $("#editar_prod_activo").prop("checked", parseInt(r["activo"])===1);
-      }
+        $("#editar_prod_activo").prop("checked", parseInt(r["activo"]) === 1);
+      },
     });
   });
 
   // Crear
-  $("#formAgregarProducto").on("submit", function(e){
+  $("#formAgregarProducto").on("submit", function (e) {
     e.preventDefault();
     const fd = new FormData(this);
-    fd.append("__action","crear");
+    fd.append("__action", "crear");
 
     $.ajax({
       url: "ajax/productos.ajax.php",
@@ -149,26 +196,28 @@ $(document).ready(function(){
       processData: false,
       contentType: false,
       dataType: "json",
-      success: function(resp){
-        if(resp.ok){
+      success: function (resp) {
+        if (resp.ok) {
           $("#modalAgregarProducto").modal("hide");
           $("#formAgregarProducto")[0].reset();
-          Swal.fire("Éxito", resp.msg || "Producto creado","success");
+          Swal.fire("Éxito", resp.msg || "Producto creado", "success");
           state.page = 1;
           cargarLista();
-        }else{
-          Swal.fire("Atención", resp.msg || "No se pudo crear","warning");
+        } else {
+          Swal.fire("Atención", resp.msg || "No se pudo crear", "warning");
         }
       },
-      error: function(){ Swal.fire("Error","Conexión fallida","error"); }
+      error: function () {
+        Swal.fire("Error", "Conexión fallida", "error");
+      },
     });
   });
 
   // Actualizar
-  $("#formEditarProducto").on("submit", function(e){
+  $("#formEditarProducto").on("submit", function (e) {
     e.preventDefault();
     const fd = new FormData(this);
-    fd.append("__action","actualizar");
+    fd.append("__action", "actualizar");
 
     $.ajax({
       url: "ajax/productos.ajax.php",
@@ -177,16 +226,18 @@ $(document).ready(function(){
       processData: false,
       contentType: false,
       dataType: "json",
-      success: function(resp){
-        if(resp.ok){
+      success: function (resp) {
+        if (resp.ok) {
           $("#modalEditarProducto").modal("hide");
-          Swal.fire("Listo", resp.msg || "Producto actualizado","success");
+          Swal.fire("Listo", resp.msg || "Producto actualizado", "success");
           cargarLista();
-        }else{
-          Swal.fire("Atención", resp.msg || "No se pudo actualizar","warning");
+        } else {
+          Swal.fire("Atención", resp.msg || "No se pudo actualizar", "warning");
         }
       },
-      error: function(){ Swal.fire("Error","Conexión fallida","error"); }
+      error: function () {
+        Swal.fire("Error", "Conexión fallida", "error");
+      },
     });
   });
 
@@ -194,29 +245,115 @@ $(document).ready(function(){
   $(".tablas").on("click", ".btnEliminarProducto", function () {
     const idProducto = $(this).attr("idProducto");
     Swal.fire({
-      icon: "warning", title:"¿Eliminar producto?", text:"Acción irreversible",
-      showCancelButton:true, confirmButtonText:"Sí, eliminar", cancelButtonText:"Cancelar"
-    }).then((r)=>{
-      if(r.value){
+      icon: "warning",
+      title: "¿Eliminar producto?",
+      text: "Acción irreversible",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((r) => {
+      if (r.value) {
         const fd = new FormData();
-        fd.append("__action","eliminar");
+        fd.append("__action", "eliminar");
         fd.append("idProducto", idProducto);
 
         $.ajax({
           url: "ajax/productos.ajax.php",
           method: "POST",
-          data: fd, processData:false, contentType:false, dataType:"json",
-          success: function(resp){
-            if(resp.ok){
-              Swal.fire("Eliminado", resp.msg || "OK","success");
+          data: fd,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+          success: function (resp) {
+            if (resp.ok) {
+              Swal.fire("Eliminado", resp.msg || "OK", "success");
               cargarLista();
-            }else{
-              Swal.fire("Atención", resp.msg || "No se pudo eliminar","warning");
+            } else {
+              Swal.fire(
+                "Atención",
+                resp.msg || "No se pudo eliminar",
+                "warning"
+              );
             }
           },
-          error: function(){ Swal.fire("Error","Conexión fallida","error"); }
+          error: function () {
+            Swal.fire("Error", "Conexión fallida", "error");
+          },
         });
       }
+    });
+  });
+
+  /* =========================
+     CSV: Dropzone + Envío
+     ========================= */
+  const drop = document.getElementById("dropzoneProdCSV");
+  const inputFile = document.getElementById("archivo_csv_productos");
+  const label = document.getElementById("fileLabelProductos");
+
+  if (drop && inputFile) {
+    drop.addEventListener("click", () => inputFile.click());
+    drop.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      drop.classList.add("bg-primary", "text-white");
+    });
+    drop.addEventListener("dragleave", () =>
+      drop.classList.remove("bg-primary", "text-white")
+    );
+    drop.addEventListener("drop", (e) => {
+      e.preventDefault();
+      drop.classList.remove("bg-primary", "text-white");
+      inputFile.files = e.dataTransfer.files;
+      if (inputFile.files.length > 0) label.innerText = inputFile.files[0].name;
+    });
+    inputFile.addEventListener("change", () => {
+      if (inputFile.files.length > 0) label.innerText = inputFile.files[0].name;
+    });
+  }
+
+  $("#formCSVProductos").on("submit", function (e) {
+    e.preventDefault();
+    const fd = new FormData(this);
+    fd.append("__action", "importar_csv");
+
+    $.ajax({
+      url: "ajax/productos.ajax.php",
+      method: "POST",
+      data: fd,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (resp) {
+        if (resp.ok) {
+          let html = `<p><strong>Insertados:</strong> ${resp.insertados}</p>
+                      <p><strong>Omitidos:</strong> ${resp.omitidos}</p>`;
+          if ((resp.errores || []).length) {
+            html += `<hr><div style="max-height:180px;overflow:auto;text-align:left"><ul>`;
+            resp.errores.slice(0, 50).forEach((er) => {
+              html += `<li>Línea ${er.linea}: ${escapeHtml(er.error)}</li>`;
+            });
+            if (resp.errores.length > 50) {
+              html += `<li>... (${resp.errores.length - 50} más)</li>`;
+            }
+            html += `</ul></div>`;
+          }
+          Swal.fire({
+            title: "Importación finalizada",
+            html,
+            icon: "success",
+            width: 700,
+          });
+          $("#modalCSVProductos").modal("hide");
+          $("#formCSVProductos")[0].reset();
+          $("#fileLabelProductos").innerText = "Ningún archivo seleccionado";
+          cargarLista();
+        } else {
+          Swal.fire("Atención", resp.msg || "No se pudo importar", "warning");
+        }
+      },
+      error: function () {
+        Swal.fire("Error", "Conexión fallida", "error");
+      },
     });
   });
 

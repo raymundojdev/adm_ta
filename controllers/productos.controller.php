@@ -1,21 +1,23 @@
 <?php
-/* ============================================
-   controllers/productos.controller.php
-   ============================================ */
-class ControllerProductos {
+/* ==========================================================
+   controllers/productos.controller.php  (REEMPLAZA COMPLETO)
+   ========================================================== */
+class ControllerProductos
+{
 
-    /* Mostrar 1 o todos (para modal edición y utilidades) */
-    static public function ctrMostrarProductos($item, $valor){
+    static public function ctrMostrarProductos($item, $valor)
+    {
         $tabla = "productos";
         return ModelProductos::mdlMostrarProductos($tabla, $item, $valor);
     }
 
-    /* Catálogos para selects de la vista */
-    static public function ctrUnidades(){
+    static public function ctrUnidades()
+    {
         return ModelProductos::mdlUnidades();
     }
 
-    static public function ctrProveedoresActivos(){
+    static public function ctrProveedoresActivos()
+    {
         return ModelProductos::mdlProveedoresActivos();
     }
 }

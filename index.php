@@ -20,7 +20,10 @@ require_once "models/proveedores.model.php";
 require_once "controllers/productos.controller.php";
 require_once "models/productos.model.php";
 
+// require_once "controllers/compras.controller.php";
+// require_once "models/compras.model.php";
+
 
 
 $plantilla = new ControllerPlantilla();
-$plantilla -> ctrPlantilla();
+$plantilla->ctrPlantilla();
