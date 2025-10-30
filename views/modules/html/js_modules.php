@@ -10,3 +10,6 @@
 <script src="views/js/promociones.js"></script>
 <script src="views/js/clientes.js"></script>
 <script src="views/js/pedidos.js"></script>
+<script src="views/js/pagos.js"></script>
+<script src="views/js/cortes_caja.js"></script>
+<script src="views/js/gastos.js"></script>

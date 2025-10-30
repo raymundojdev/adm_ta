@@ -35,6 +35,15 @@ require_once "models/clientes.model.php";
 require_once "controllers/pedidos.controller.php";
 require_once "models/pedidos.model.php";
 
+require_once "controllers/pagos.controller.php";
+require_once "models/pagos.model.php";
+
+require_once "controllers/cortes.controller.php";
+require_once "models/cortes.model.php";
+
+require_once "controllers/gastos.controller.php";
+require_once "models/gastos.model.php";
+
 // require_once "controllers/compras.controller.php";
 // require_once "models/compras.model.php";
 

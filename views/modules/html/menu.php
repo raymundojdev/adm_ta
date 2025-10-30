@@ -74,6 +74,24 @@
                     </a>
                 </li>
                 <li>
+                    <a href="pagos" class="waves-effect">
+                        <i class="ri-money-dollar-box-line"></i>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="cortes_caja" class="waves-effect">
+                        <i class="ri-wallet-3-line"></i>
+                        <span>Cortes de caja</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="gastos" class="waves-effect">
+                        <i class="ri-file-dollar-line"></i>
+                        <span>Gastos</span>
+                    </a>
+                </li>
+                <li>
                     <a href="compras" class="waves-effect">
                         <i class="ri-shopping-cart-line"></i>
                         <span>Compras</span>
