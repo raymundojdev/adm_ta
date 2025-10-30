@@ -1,9 +1,11 @@
-<!-- views/modules/productos.php -->
+<?php
+// views/modules/clientes.php
+?>
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
 
-            <!-- Encabezado -->
+            <!-- Encabezado moderno -->
             <div class="card border-0 shadow-sm mb-4 overflow-hidden">
                 <div class="card-body p-4 position-relative">
                     <div class="position-absolute top-0 start-0 w-100 h-100"
@@ -12,10 +14,10 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div>
                             <h4 class="mb-1 fw-semibold">
-                                <i class="fas fa-burger text-primary me-2"></i>
-                                Productos
+                                <i class="fas fa-user-stars text-primary me-2"></i>
+                                Clientes & Puntos
                             </h4>
-                            <small class="text-muted">Gestión basada en SKU, categoría y estado.</small>
+                            <small class="text-muted">Administra tus clientes y su saldo de puntos por compras.</small>
                         </div>
                         <div class="d-flex gap-2">
                             <span
@@ -34,12 +36,13 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                         <div class="input-group" style="max-width: 420px;">
                             <!-- <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                            <input type="text" class="form-control" placeholder="Buscar (usa el filtro DataTable)"> -->
+                            <input type="text" class="form-control"
+                                placeholder="Buscar cliente (usa el filtro de tu DataTable)"> -->
                         </div>
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalAgregarProducto">
-                                <i class="fas fa-plus me-1"></i> Nuevo producto
+                                data-bs-target="#modalAgregarCliente">
+                                <i class="fas fa-user-plus me-1"></i> Nuevo cliente
                             </button>
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                 data-bs-target="#modalCargarCSV">
@@ -53,10 +56,10 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>SKU</th>
-                                    <th>Producto</th>
-                                    <th>Categoría</th>
-                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
+                                    <th class="text-end">Puntos</th>
                                     <th>Estado</th>
                                     <th>Creado</th>
                                     <th style="width:180px;">Acciones</th>
@@ -64,39 +67,34 @@
                             </thead>
                             <tbody>
                                 <?php
-                $productos = ControllerProductos::ctrMostrarProductos(null, null);
-                if (!empty($productos)) {
-                  foreach ($productos as $k => $p) {
-                    $badge = ((int)$p["pro_activo"] === 1)
-                      ? '<span class="badge bg-success">Activo</span>'
-                      : '<span class="badge bg-secondary">Inactivo</span>';
-
-                    $thumb = $p["pro_imagen"]
-                      ? '<img src="' . htmlspecialchars($p["pro_imagen"]) . '" alt="img" class="rounded" style="width:46px;height:46px;object-fit:cover;">'
-                      : '<span class="text-muted">—</span>';
-
-                    echo '<tr>
+                                $clientes = ControllerClientes::ctrMostrarClientes(null, null);
+                                if (!empty($clientes)) {
+                                    foreach ($clientes as $k => $c) {
+                                        $badge = ((int)$c["cli_activo"] === 1)
+                                            ? '<span class="badge bg-success">Activo</span>'
+                                            : '<span class="badge bg-secondary">Inactivo</span>';
+                                        echo '<tr>
                         <td>' . ($k + 1) . '</td>
-                        <td>' . htmlspecialchars($p["pro_sku"] ?? "") . '</td>
-                        <td>' . htmlspecialchars($p["pro_nombre"] ?? "") . '</td>
-                        <td>' . htmlspecialchars($p["cat_nombre"] ?? "") . '</td>
-                        <td>' . $thumb . '</td>
+                        <td>' . htmlspecialchars($c["cli_nombre"] ?? "") . '</td>
+                        <td>' . htmlspecialchars($c["cli_telefono"] ?? "") . '</td>
+                        <td>' . htmlspecialchars($c["cli_email"] ?? "") . '</td>
+                        <td class="text-end">' . number_format((int)($c["cli_puntos"] ?? 0)) . '</td>
                         <td>' . $badge . '</td>
-                        <td>' . htmlspecialchars($p["pro_creado_en"] ?? "") . '</td>
+                        <td>' . htmlspecialchars($c["cli_creado_en"] ?? "") . '</td>
                         <td>
                           <div class="btn-group" role="group">
-                            <button class="btn btn-outline-primary btn-sm btnEditarProducto" idProducto="' . ($p["pro_id"] ?? 0) . '" data-bs-toggle="tooltip" title="Editar">
+                            <button class="btn btn-outline-primary btn-sm btnEditarCliente" idCliente="' . ($c["cli_id"] ?? 0) . '" data-bs-toggle="tooltip" title="Editar">
                               <i class="fas fa-pen"></i>
                             </button>
-                            <button class="btn btn-outline-danger btn-sm btnEliminarProducto" idProducto="' . ($p["pro_id"] ?? 0) . '" data-bs-toggle="tooltip" title="Eliminar">
+                            <button class="btn btn-outline-danger btn-sm btnEliminarCliente" idCliente="' . ($c["cli_id"] ?? 0) . '" data-bs-toggle="tooltip" title="Eliminar">
                               <i class="fas fa-trash"></i>
                             </button>
                           </div>
                         </td>
                       </tr>';
-                  }
-                }
-                ?>
+                                    }
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -108,56 +106,46 @@
     </div>
 </div>
 
-<!-- MODAL: Agregar -->
-<div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel"
+<!-- MODAL: Agregar cliente -->
+<div class="modal fade" id="modalAgregarCliente" tabindex="-1" aria-labelledby="modalAgregarClienteLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content shadow-lg border-0">
             <form method="post" role="form">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalAgregarProductoLabel">
-                        <i class="fas fa-plus-circle me-2"></i> Nuevo producto
+                    <h5 class="modal-title" id="modalAgregarClienteLabel">
+                        <i class="fas fa-user-plus me-2"></i> Agregar cliente
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
 
                 <div class="modal-body">
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">SKU</label>
-                            <input type="text" class="form-control" name="pro_sku" placeholder="Ej. TAC-RES-001"
-                                required>
-                        </div>
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" name="pro_nombre" placeholder="Taco de res"
+                            <input type="text" class="form-control" name="cli_nombre" placeholder="Ej. Juan Pérez"
                                 required>
                         </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" name="cat_id" required>
-                                <?php
-                $cats = ControllerCategorias::ctrMostrarCategorias(null, null);
-                foreach ($cats as $c) {
-                  echo '<option value="' . $c["cat_id"] . '">' . htmlspecialchars($c["cat_nombre"]) . '</option>';
-                }
-                ?>
-                            </select>
+                        <div class="col-md-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" name="cli_telefono" placeholder="10 dígitos">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="cli_email" placeholder="correo@dominio.com">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <label class="form-label">Puntos iniciales</label>
+                            <input type="number" class="form-control" name="cli_puntos" value="0" min="0">
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">Estado</label>
-                            <select class="form-select" name="pro_activo" required>
+                            <select class="form-select" name="cli_activo" required>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label">Imagen (URL opcional)</label>
-                            <input type="text" class="form-control" name="pro_imagen"
-                                placeholder="https://.../taco.jpg">
                         </div>
                     </div>
                 </div>
@@ -170,9 +158,9 @@
                 </div>
 
                 <?php
-        $guardar = new ControllerProductos();
-        $guardar->ctrGuardarProductos();
-        ?>
+                $guardar = new ControllerClientes();
+                $guardar->ctrGuardarClientes();
+                ?>
             </form>
         </div>
     </div>
@@ -184,7 +172,7 @@
         <div class="modal-content shadow">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalCargarCSVLabel">
-                    <i class="fas fa-file-csv me-2"></i> Importar productos desde CSV
+                    <i class="fas fa-file-csv me-2"></i> Importar clientes desde CSV
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -192,7 +180,7 @@
             <div class="modal-body">
                 <p class="mb-2">
                     <strong>Formato:</strong>
-                    <code>pro_sku,pro_nombre,cat_id,pro_imagen,pro_activo</code>
+                    <code>cli_nombre,cli_telefono,cli_email,cli_puntos,cli_activo</code>
                 </p>
                 <form method="post" enctype="multipart/form-data" id="formCSV">
                     <div class="mb-3">
@@ -210,65 +198,55 @@
                         </button>
                     </div>
                     <?php
-          $csv = new ControllerProductos();
-          $csv->ctrGuardarProductosCsv();
-          ?>
+                    $csv = new ControllerClientes();
+                    $csv->ctrGuardarClientesCsv();
+                    ?>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL: Editar -->
-<div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-labelledby="modalEditarProductoLabel"
+<!-- MODAL: Editar cliente -->
+<div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content shadow-lg border-0">
             <form method="post" role="form">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalEditarProductoLabel">
-                        <i class="fas fa-pen-to-square me-2"></i> Editar producto
+                    <h5 class="modal-title" id="modalEditarClienteLabel">
+                        <i class="fas fa-user-edit me-2"></i> Editar cliente
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" id="pro_id" name="pro_id">
+                    <input type="hidden" id="cli_id" name="cli_id">
 
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">SKU</label>
-                            <input type="text" class="form-control" id="editar_sku" name="editar_sku" required>
-                        </div>
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <label class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="editar_nombre" name="editar_nombre" required>
                         </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" id="editar_cat_id" name="editar_cat_id" required>
-                                <?php
-                $cats = ControllerCategorias::ctrMostrarCategorias(null, null);
-                foreach ($cats as $c) {
-                  echo '<option value="' . $c["cat_id"] . '">' . htmlspecialchars($c["cat_nombre"]) . '</option>';
-                }
-                ?>
-                            </select>
+                        <div class="col-md-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="editar_telefono" name="editar_telefono">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editar_email" name="editar_email">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <label class="form-label">Puntos</label>
+                            <input type="number" class="form-control" id="editar_puntos" name="editar_puntos" min="0">
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">Estado</label>
                             <select class="form-select" id="editar_activo" name="editar_activo" required>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label">Imagen (URL opcional)</label>
-                            <input type="text" class="form-control" id="editar_imagen" name="editar_imagen"
-                                placeholder="https://.../taco.jpg">
                         </div>
                     </div>
                 </div>
@@ -281,15 +259,15 @@
                 </div>
 
                 <?php
-        $editar = new ControllerProductos();
-        $editar->ctrEditarProductos();
-        ?>
+                $editar = new ControllerClientes();
+                $editar->ctrEditarClientes();
+                ?>
             </form>
         </div>
     </div>
 </div>
 
 <?php
-$eliminar = new ControllerProductos();
-$eliminar->ctrEliminarProducto();
+$eliminar = new ControllerClientes();
+$eliminar->ctrEliminarCliente();
 ?>

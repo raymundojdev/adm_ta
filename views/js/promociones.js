@@ -1,17 +1,18 @@
-// views/js/productos.js
 /* =========================================================================
-   PRODUCTOS - JS (adaptado a esquema pro_sku, pro_nombre, cat_id, etc.)
+   PROMOCIONES - JS
+   Delegación global compatible con DataTables
    ========================================================================= */
 
-$(document).on("click", ".btnEditarProducto", function () {
-  var id = $(this).attr("idProducto");
+// EDITAR (carga por AJAX y abre modal con API BS5)
+$(document).on("click", ".btnEditarPromocion", function () {
+  var id = $(this).attr("idPromocion");
   if (!id) return;
 
   var datos = new FormData();
-  datos.append("idProducto", id);
+  datos.append("idPromocion", id);
 
   $.ajax({
-    url: "ajax/productos.ajax.php",
+    url: "ajax/promociones.ajax.php",
     method: "POST",
     data: datos,
     cache: false,
@@ -19,36 +20,41 @@ $(document).on("click", ".btnEditarProducto", function () {
     processData: false,
     dataType: "json",
     success: function (r) {
-      if (!r || !r.pro_id) {
-        Swal.fire({ icon: "error", title: "No se encontró el producto" });
+      if (!r || !r.prm_id) {
+        Swal.fire({ icon: "error", title: "No se encontró la promoción" });
         return;
       }
+      // Llenar inputs
+      $("#prm_id").val(r.prm_id);
+      $("#editar_nombre").val(r.prm_nombre);
+      $("#editar_tipo").val(r.prm_tipo);
+      $("#editar_valor").val(r.prm_valor);
+      $("#editar_activa").val(r.prm_activa);
+      $("#editar_inicio").val(r.prm_inicio);
+      $("#editar_fin").val(r.prm_fin);
+      $("#editar_codigo").val(r.prm_codigo);
+      $("#editar_descripcion").val(r.prm_descripcion);
 
-      $("#pro_id").val(r.pro_id);
-      $("#editar_sku").val(r.pro_sku);
-      $("#editar_nombre").val(r.pro_nombre);
-      $("#editar_cat_id").val(r.cat_id);
-      $("#editar_imagen").val(r.pro_imagen);
-      $("#editar_activo").val(r.pro_activo);
-
-      var el = document.getElementById("modalEditarProducto");
+      // Mostrar modal con API Bootstrap 5
+      var el = document.getElementById("modalEditarPromocion");
       var modal = bootstrap.Modal.getOrCreateInstance(el);
       modal.show();
     },
     error: function (xhr) {
       console.error(xhr.responseText);
-      Swal.fire({ icon: "error", title: "Error al cargar producto" });
+      Swal.fire({ icon: "error", title: "Error al cargar promoción" });
     },
   });
 });
 
-$(document).on("click", ".btnEliminarProducto", function () {
-  var id = $(this).attr("idProducto");
+// ELIMINAR
+$(document).on("click", ".btnEliminarPromocion", function () {
+  var id = $(this).attr("idPromocion");
   if (!id) return;
 
   Swal.fire({
     icon: "warning",
-    title: "¿Eliminar producto?",
+    title: "¿Eliminar promoción?",
     text: "Esta acción no se puede deshacer",
     showCancelButton: true,
     confirmButtonText: "Sí, eliminar",
@@ -56,12 +62,12 @@ $(document).on("click", ".btnEliminarProducto", function () {
   }).then((r) => {
     if (r.isConfirmed) {
       window.location =
-        "index.php?url=productos&idProducto=" + encodeURIComponent(id);
+        "index.php?url=promociones&idPromocion=" + encodeURIComponent(id);
     }
   });
 });
 
-// Dropzone CSV para pro_sku,pro_nombre,cat_id,pro_imagen,pro_activo
+// DROPZONE CSV (UX mejorada)
 (function initDropzoneCSV() {
   var dz = document.getElementById("dropzoneCSV");
   var input = document.getElementById("archivo_csv");

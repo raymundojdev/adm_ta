@@ -1,223 +1,92 @@
 <?php
-/* ==========================================================
-   models/productos.model.php  (REEMPLAZA COMPLETO)
-   ========================================================== */
+// models/productos.model.php
+// JOIN a categorías para mostrar cat_nombre en la lista
+
 require_once "conexion.php";
 
 class ModelProductos
 {
 
-    /* ===== Listado paginado y filtrado (rápido) ===== */
-    static public function mdlListarProductosPaginado($filtros)
-    {
-        $pdo = conexiondb::conectar();
-
-        $where = [];
-        $params = [];
-
-        if (!empty($filtros['busqueda'])) {
-            $where[] = "(p.nombre LIKE :q OR pr.nombre LIKE :q)";
-            $params[":q"] = "%" . $filtros['busqueda'] . "%";
-        }
-        if ($filtros['activo'] !== '' && $filtros['activo'] !== null) {
-            $where[] = "p.activo = :activo";
-            $params[":activo"] = (int)$filtros['activo'];
-        }
-        if (!empty($filtros['proveedor_id'])) {
-            $where[] = "p.proveedor_id = :proveedor_id";
-            $params[":proveedor_id"] = (int)$filtros['proveedor_id'];
-        }
-
-        $sql = "SELECT p.id, p.nombre, p.costo_ref, p.unidad_id, p.proveedor_id, p.activo,
-                       u.abrev AS unidad_abrev,
-                       pr.nombre AS proveedor_nombre
-                FROM productos p
-                JOIN unidades u ON u.id = p.unidad_id
-                LEFT JOIN proveedores pr ON pr.id = p.proveedor_id";
-        if ($where) $sql .= " WHERE " . implode(" AND ", $where);
-        $sql .= " ORDER BY p.nombre ASC";
-
-        $page    = max(1, (int)($filtros['page'] ?? 1));
-        $perPage = max(5, min(100, (int)($filtros['per_page'] ?? 20)));
-        $offset  = ($page - 1) * $perPage;
-
-        $sql .= " LIMIT :limit OFFSET :offset";
-        $stmt = $pdo->prepare($sql);
-
-        foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
-        }
-        $stmt->bindValue(":limit",  $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(":offset", $offset,  PDO::PARAM_INT);
-
-        $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt = null;
-
-        return $rows;
-    }
-
-    static public function mdlContarProductos($filtros)
-    {
-        $pdo = conexiondb::conectar();
-
-        $where = [];
-        $params = [];
-
-        if (!empty($filtros['busqueda'])) {
-            $where[] = "(p.nombre LIKE :q OR pr.nombre LIKE :q)";
-            $params[":q"] = "%" . $filtros['busqueda'] . "%";
-        }
-        if ($filtros['activo'] !== '' && $filtros['activo'] !== null) {
-            $where[] = "p.activo = :activo";
-            $params[":activo"] = (int)$filtros['activo'];
-        }
-        if (!empty($filtros['proveedor_id'])) {
-            $where[] = "p.proveedor_id = :proveedor_id";
-            $params[":proveedor_id"] = (int)$filtros['proveedor_id'];
-        }
-
-        $sql = "SELECT COUNT(*) AS total
-                FROM productos p
-                LEFT JOIN proveedores pr ON pr.id = p.proveedor_id";
-        if ($where) $sql .= " WHERE " . implode(" AND ", $where);
-
-        $stmt = $pdo->prepare($sql);
-        foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
-        }
-        $stmt->execute();
-        $total = (int)$stmt->fetchColumn();
-        $stmt = null;
-
-        return $total;
-    }
-
-    /* ===== Mostrar uno / todos (mantiene tu firma) ===== */
     static public function mdlMostrarProductos($tabla, $item, $valor)
     {
+        $pdo = conexiondb::conectar();
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); // (OPT) claves asociativas
+
         if ($item != null) {
-            $stmt = conexiondb::conectar()->prepare(
-                "SELECT p.*, u.nombre AS unidad_nombre, u.abrev AS unidad_abrev, pr.nombre AS proveedor_nombre
-                 FROM $tabla p
-                 JOIN unidades u ON u.id = p.unidad_id
-                 LEFT JOIN proveedores pr ON pr.id = p.proveedor_id
-                 WHERE p.$item = :$item LIMIT 1"
-            );
-            $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
+            // (OPT) whitelist para evitar inyección en $item
+            $permitidos = ["pro_id", "pro_sku"];
+            if (!in_array($item, $permitidos, true)) {
+                return [];
+            }
+
+            $sql = "SELECT p.*, c.cat_nombre
+                    FROM $tabla p
+                    JOIN categorias c ON c.cat_id = p.cat_id
+                    WHERE p.$item = :val
+                    LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":val", $valor, PDO::PARAM_STR);
             $stmt->execute();
-            $row = $stmt->fetch();
-            $stmt = null;
-            return $row;
+            return $stmt->fetch() ?: [];
         } else {
-            $stmt = conexiondb::conectar()->prepare(
-                "SELECT p.*, u.nombre AS unidad_nombre, u.abrev AS unidad_abrev, pr.nombre AS proveedor_nombre
-                 FROM $tabla p
-                 JOIN unidades u ON u.id = p.unidad_id
-                 LEFT JOIN proveedores pr ON pr.id = p.proveedor_id
-                 ORDER BY p.nombre ASC"
-            );
+            $sql = "SELECT p.*, c.cat_nombre
+                    FROM $tabla p
+                    JOIN categorias c ON c.cat_id = p.cat_id
+                    ORDER BY p.pro_id DESC";
+            $stmt = $pdo->prepare($sql);
             $stmt->execute();
-            $rows = $stmt->fetchAll();
-            $stmt = null;
-            return $rows;
+            return $stmt->fetchAll() ?: [];
         }
     }
 
-    /* ===== CRUD ===== */
     static public function mdlGuardarProductos($tabla, $datos)
     {
-        $stmt = conexiondb::conectar()->prepare(
-            "INSERT INTO $tabla (nombre, unidad_id, costo_ref, proveedor_id, activo)
-             VALUES (:nombre, :unidad_id, :costo_ref, :proveedor_id, :activo)"
-        );
-        $stmt->bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
-        $stmt->bindParam(":unidad_id", $datos["unidad_id"], PDO::PARAM_INT);
-        $stmt->bindParam(":costo_ref", $datos["costo_ref"]);
-        if ($datos["proveedor_id"] === "" || $datos["proveedor_id"] === null) {
-            $stmt->bindValue(":proveedor_id", null, PDO::PARAM_NULL);
-        } else {
-            $stmt->bindParam(":proveedor_id", $datos["proveedor_id"], PDO::PARAM_INT);
-        }
-        $stmt->bindParam(":activo", $datos["activo"], PDO::PARAM_INT);
-        $ok = $stmt->execute();
-        $stmt = null;
-        return $ok ? "ok" : "error";
+        $sql = "INSERT INTO $tabla
+                (pro_sku, pro_nombre, cat_id, pro_imagen, pro_activo)
+                VALUES
+                (:pro_sku, :pro_nombre, :cat_id, :pro_imagen, :pro_activo)";
+        $stmt = conexiondb::conectar()->prepare($sql);
+
+        $stmt->bindParam(":pro_sku", $datos["pro_sku"], PDO::PARAM_STR);
+        $stmt->bindParam(":pro_nombre", $datos["pro_nombre"], PDO::PARAM_STR);
+        $stmt->bindParam(":cat_id", $datos["cat_id"], PDO::PARAM_INT);
+
+        if ($datos["pro_imagen"] === null) $stmt->bindValue(":pro_imagen", null, PDO::PARAM_NULL);
+        else $stmt->bindParam(":pro_imagen", $datos["pro_imagen"], PDO::PARAM_STR);
+
+        $stmt->bindParam(":pro_activo", $datos["pro_activo"], PDO::PARAM_INT);
+
+        return $stmt->execute() ? "ok" : "error";
     }
 
     static public function mdlEditarProductos($tabla, $datos)
     {
-        $stmt = conexiondb::conectar()->prepare(
-            "UPDATE $tabla
-             SET nombre=:nombre, unidad_id=:unidad_id, costo_ref=:costo_ref, proveedor_id=:proveedor_id, activo=:activo
-             WHERE id=:id"
-        );
-        $stmt->bindParam(":id", $datos["id"], PDO::PARAM_INT);
-        $stmt->bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
-        $stmt->bindParam(":unidad_id", $datos["unidad_id"], PDO::PARAM_INT);
-        $stmt->bindParam(":costo_ref", $datos["costo_ref"]);
-        if ($datos["proveedor_id"] === "" || $datos["proveedor_id"] === null) {
-            $stmt->bindValue(":proveedor_id", null, PDO::PARAM_NULL);
-        } else {
-            $stmt->bindParam(":proveedor_id", $datos["proveedor_id"], PDO::PARAM_INT);
-        }
-        $stmt->bindParam(":activo", $datos["activo"], PDO::PARAM_INT);
-        $ok = $stmt->execute();
-        $stmt = null;
-        return $ok ? "ok" : "error";
+        $sql = "UPDATE $tabla SET
+                  pro_sku=:pro_sku,
+                  pro_nombre=:pro_nombre,
+                  cat_id=:cat_id,
+                  pro_imagen=:pro_imagen,
+                  pro_activo=:pro_activo
+                WHERE pro_id=:pro_id";
+        $stmt = conexiondb::conectar()->prepare($sql);
+
+        $stmt->bindParam(":pro_id", $datos["pro_id"], PDO::PARAM_INT);
+        $stmt->bindParam(":pro_sku", $datos["pro_sku"], PDO::PARAM_STR);
+        $stmt->bindParam(":pro_nombre", $datos["pro_nombre"], PDO::PARAM_STR);
+        $stmt->bindParam(":cat_id", $datos["cat_id"], PDO::PARAM_INT);
+
+        if ($datos["pro_imagen"] === null) $stmt->bindValue(":pro_imagen", null, PDO::PARAM_NULL);
+        else $stmt->bindParam(":pro_imagen", $datos["pro_imagen"], PDO::PARAM_STR);
+
+        $stmt->bindParam(":pro_activo", $datos["pro_activo"], PDO::PARAM_INT);
+
+        return $stmt->execute() ? "ok" : "error";
     }
 
-    static public function mdlEliminarProducto($tabla, $datos)
+    static public function mdlEliminarProducto($tabla, $id)
     {
-        $stmt = conexiondb::conectar()->prepare("DELETE FROM $tabla WHERE id=:id");
-        $stmt->bindParam(":id", $datos, PDO::PARAM_INT);
-        $ok = $stmt->execute();
-        $stmt = null;
-        return $ok ? "ok" : "error";
-    }
-
-    /* ===== Catálogos ligeros ===== */
-    static public function mdlUnidades()
-    {
-        $stmt = conexiondb::conectar()->prepare("SELECT id, nombre, abrev FROM unidades ORDER BY nombre ASC");
-        $stmt->execute();
-        $res = $stmt->fetchAll();
-        $stmt = null;
-        return $res;
-    }
-
-    static public function mdlProveedoresActivos()
-    {
-        $stmt = conexiondb::conectar()->prepare("SELECT id, nombre FROM proveedores WHERE estatus='ACTIVO' ORDER BY nombre ASC");
-        $stmt->execute();
-        $res = $stmt->fetchAll();
-        $stmt = null;
-        return $res;
-    }
-
-    /* ====== LOOKUPS para CSV ====== */
-    static public function mdlUnidadIdPorNombreOAbrev($texto)
-    {
-        $pdo = conexiondb::conectar();
-        $sql = "SELECT id FROM unidades WHERE nombre = :t OR abrev = :t LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(":t", $texto, PDO::PARAM_STR);
-        $stmt->execute();
-        $id = $stmt->fetchColumn();
-        $stmt = null;
-        return $id ? (int)$id : null;
-    }
-
-    static public function mdlProveedorIdPorNombre($nombre)
-    {
-        if ($nombre === "" || $nombre === null) return null;
-        $pdo = conexiondb::conectar();
-        $sql = "SELECT id FROM proveedores WHERE nombre = :n LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(":n", $nombre, PDO::PARAM_STR);
-        $stmt->execute();
-        $id = $stmt->fetchColumn();
-        $stmt = null;
-        return $id ? (int)$id : null;
+        $stmt = conexiondb::conectar()->prepare("DELETE FROM $tabla WHERE pro_id=:pro_id");
+        $stmt->bindParam(":pro_id", $id, PDO::PARAM_INT);
+        return $stmt->execute() ? "ok" : "error";
     }
 }

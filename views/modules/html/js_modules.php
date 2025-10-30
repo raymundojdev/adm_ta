@@ -1,0 +1,12 @@
+<script src="views/js/plantilla.js"></script>
+<script src="views/js/usuarios.js"></script>
+<script src="views/assets/js/app.js"></script>
+<script src="views/js/inicio.js"></script>
+<script src="views/js/proveedores.js"></script>
+<script src="views/js/productos.js"></script>
+<!-- <script src="views/js/compras.js"></script> -->
+<script src="views/js/sucursales.js"></script>
+<script src="views/js/categorias.js"></script>
+<script src="views/js/promociones.js"></script>
+<script src="views/js/clientes.js"></script>
+<script src="views/js/pedidos.js"></script>

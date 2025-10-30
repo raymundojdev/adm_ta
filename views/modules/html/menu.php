@@ -27,6 +27,34 @@
                     </a>
                 </li>
                 <li>
+                    <a href="sucursales" class="waves-effect">
+                        <i class="ri-government-line"></i>
+                        <span>Sucursales</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="categorias" class="waves-effect">
+                        <i class="ri-folder-2-line"></i>
+                        <span>Categorías</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="promociones" class="waves-effect">
+                        <i class="ri-price-tag-2-line"></i>
+                        <span>Promociones</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="clientes" class="waves-effect">
+                        <i class="ri-user-3-line"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+
+                <li>
+
+
                     <a href="proveedores" class="waves-effect">
                         <i class="ri-government-line"></i>
                         <span>Proveedores</span>
@@ -37,6 +65,12 @@
                     <a href="productos" class="waves-effect">
                         <i class="ri-government-line"></i>
                         <span>Productos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="pedidos" class="waves-effect">
+                        <i class="ri-shopping-bag-line"></i>
+                        <span>Pedidos</span>
                     </a>
                 </li>
                 <li>

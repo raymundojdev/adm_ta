@@ -1,17 +1,19 @@
-// views/js/productos.js
+// views/js/clientes.js
 /* =========================================================================
-   PRODUCTOS - JS (adaptado a esquema pro_sku, pro_nombre, cat_id, etc.)
+   CLIENTES - JS
+   Delegación global compatible con DataTables
    ========================================================================= */
 
-$(document).on("click", ".btnEditarProducto", function () {
-  var id = $(this).attr("idProducto");
+// EDITAR: carga por AJAX y abre modal con API BS5
+$(document).on("click", ".btnEditarCliente", function () {
+  var id = $(this).attr("idCliente");
   if (!id) return;
 
   var datos = new FormData();
-  datos.append("idProducto", id);
+  datos.append("idCliente", id);
 
   $.ajax({
-    url: "ajax/productos.ajax.php",
+    url: "ajax/clientes.ajax.php",
     method: "POST",
     data: datos,
     cache: false,
@@ -19,36 +21,37 @@ $(document).on("click", ".btnEditarProducto", function () {
     processData: false,
     dataType: "json",
     success: function (r) {
-      if (!r || !r.pro_id) {
-        Swal.fire({ icon: "error", title: "No se encontró el producto" });
+      if (!r || !r.cli_id) {
+        Swal.fire({ icon: "error", title: "No se encontró el cliente" });
         return;
       }
+      // Llenar inputs
+      $("#cli_id").val(r.cli_id);
+      $("#editar_nombre").val(r.cli_nombre);
+      $("#editar_telefono").val(r.cli_telefono);
+      $("#editar_email").val(r.cli_email);
+      $("#editar_puntos").val(r.cli_puntos);
+      $("#editar_activo").val(r.cli_activo);
 
-      $("#pro_id").val(r.pro_id);
-      $("#editar_sku").val(r.pro_sku);
-      $("#editar_nombre").val(r.pro_nombre);
-      $("#editar_cat_id").val(r.cat_id);
-      $("#editar_imagen").val(r.pro_imagen);
-      $("#editar_activo").val(r.pro_activo);
-
-      var el = document.getElementById("modalEditarProducto");
+      var el = document.getElementById("modalEditarCliente");
       var modal = bootstrap.Modal.getOrCreateInstance(el);
       modal.show();
     },
     error: function (xhr) {
       console.error(xhr.responseText);
-      Swal.fire({ icon: "error", title: "Error al cargar producto" });
+      Swal.fire({ icon: "error", title: "Error al cargar cliente" });
     },
   });
 });
 
-$(document).on("click", ".btnEliminarProducto", function () {
-  var id = $(this).attr("idProducto");
+// ELIMINAR
+$(document).on("click", ".btnEliminarCliente", function () {
+  var id = $(this).attr("idCliente");
   if (!id) return;
 
   Swal.fire({
     icon: "warning",
-    title: "¿Eliminar producto?",
+    title: "¿Eliminar cliente?",
     text: "Esta acción no se puede deshacer",
     showCancelButton: true,
     confirmButtonText: "Sí, eliminar",
@@ -56,12 +59,12 @@ $(document).on("click", ".btnEliminarProducto", function () {
   }).then((r) => {
     if (r.isConfirmed) {
       window.location =
-        "index.php?url=productos&idProducto=" + encodeURIComponent(id);
+        "index.php?url=clientes&idCliente=" + encodeURIComponent(id);
     }
   });
 });
 
-// Dropzone CSV para pro_sku,pro_nombre,cat_id,pro_imagen,pro_activo
+// DROPZONE CSV (UX)
 (function initDropzoneCSV() {
   var dz = document.getElementById("dropzoneCSV");
   var input = document.getElementById("archivo_csv");
