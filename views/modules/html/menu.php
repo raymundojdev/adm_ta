@@ -64,6 +64,7 @@
                                     <li><a href="categorias"><i class="ri-folder-2-line"></i> Categorías</a></li>
                                     <li><a href="promociones"><i class="ri-price-tag-2-line"></i> Promociones</a></li>
                                     <li><a href="clientes"><i class="ri-user-3-line"></i> Clientes</a></li>
+                                    <li><a href="puntos"><i class="ri-user-3-line"></i> Puntos</a></li>
                                     <li><a href="sucursales"><i class="ri-government-line"></i> Sucursales</a></li>
                                 </ul>
                             </li>

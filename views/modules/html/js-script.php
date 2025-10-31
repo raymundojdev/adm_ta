@@ -32,3 +32,4 @@
 <script src="views/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
 <script src="views/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
 <script src="views/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -44,6 +44,7 @@ session_start();
                 $_GET["url"] == "gastos" ||
                 $_GET["url"] == "ventas" ||
                 $_GET["url"] == "dashboard" ||
+                   $_GET["url"] == "puntos" ||
                 $_GET["url"] == "404" ||
                 $_GET["url"] == "login" ||
                 $_GET["url"] == "salir"

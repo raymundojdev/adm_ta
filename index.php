@@ -51,6 +51,11 @@ require_once "controllers/ventas.controller.php";
 require_once "models/ventas.model.php";
 
 require_once "controllers/dashboard.controller.php";
+require_once "models/dashboard.model.php";
+
+require_once "controllers/puntos.controller.php";
+require_once "models/puntos.model.php";
+
 
 // require_once "controllers/compras.controller.php";
 // require_once "models/compras.model.php";

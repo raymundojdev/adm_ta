@@ -1,61 +1,93 @@
 // views/js/dashboard.js
-/* ============================================================
-   DASHBOARD - Gráficos (solo UI)
-   ============================================================ */
-(function () {
-  // Línea: Ventas ($) y Tacos por hora
-  const el1 = document.getElementById("chartVentasHora");
-  if (el1) {
-    const labels = JSON.parse(el1.dataset.labels || "[]");
-    const ventas = JSON.parse(el1.dataset.ventas || "[]");
-    const tacos = JSON.parse(el1.dataset.tacos || "[]");
-    new Chart(el1, {
-      type: "line",
-      data: {
-        labels,
-        datasets: [
-          { label: "Ventas ($)", data: ventas, borderWidth: 2, tension: 0.35 },
-          { label: "Tacos", data: tacos, borderWidth: 2, tension: 0.35 },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: "bottom" } },
-        scales: { y: { beginAtZero: true } },
-      },
-    });
-  }
+/* =========================================================================
+   DASHBOARD - JS (usa pedidos pagados)
+   ========================================================================= */
 
-  // Pie: Mix de pagos
-  const el2 = document.getElementById("chartPagos");
-  if (el2) {
-    const mix = JSON.parse(el2.dataset.mix || "[]");
-    new Chart(el2, {
-      type: "pie",
-      data: {
-        labels: mix.map((x) => x.label),
-        datasets: [{ data: mix.map((x) => x.valor) }],
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: "bottom" } },
-      },
-    });
-  }
+let chartHoras, chartTop, chartSuc, chartMetas;
 
-  // Barras: Top productos
-  const el3 = document.getElementById("chartTopProductos");
-  if (el3) {
-    const labels = JSON.parse(el3.dataset.labels || "[]");
-    const cantidades = JSON.parse(el3.dataset.cantidades || "[]");
-    new Chart(el3, {
-      type: "bar",
-      data: { labels, datasets: [{ label: "Unidades", data: cantidades }] },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } },
-      },
+function renderVentasHoras(data){
+  const ctx = document.getElementById('chartVentasHoras');
+  if(chartHoras) chartHoras.destroy();
+  chartHoras = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [...Array(24).keys()].map(h=>String(h).padStart(2,'0')+":00"),
+      datasets: [{ label: 'Ventas $ por hora (hoy)', data }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false}} }
+  });
+}
+
+function renderTopProductos(data){
+  const ctx = document.getElementById('chartTopProductos');
+  if(chartTop) chartTop.destroy();
+  chartTop = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(r=>r.pro_nombre),
+      datasets: [{ label: 'Unidades vendidas (hoy)', data: data.map(r=>r.qty) }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false}} }
+  });
+}
+
+function renderVentasSucursal(data){
+  const ctx = document.getElementById('chartVentasSucursal');
+  if(chartSuc) chartSuc.destroy();
+  chartSuc = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(r=>r.suc_nombre),
+      datasets: [{ label: 'Ventas $ (hoy)', data: data.map(r=>r.total) }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false}} }
+  });
+}
+
+function renderProgresoMetas(data){
+  const ctx = document.getElementById('chartMetas');
+  if(chartMetas) chartMetas.destroy();
+  chartMetas = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(r=>r.suc_nombre),
+      datasets: [{ label: '% Cumplimiento', data: data.map(r=>r.pct) }]
+    },
+    options: {
+      responsive:true, plugins:{legend:{display:false}},
+      scales:{ y:{ min:0, max:100 } }
+    }
+  });
+}
+
+/* Cargar KPIs + gráficas */
+function cargarDashboard(){
+  fetch('ajax/dashboard.ajax.php?action=kpis')
+    .then(r=>r.json())
+    .then(k=>{
+      document.getElementById('kpiVentas').innerText = '$ ' + Number(k.ventas_hoy||0).toFixed(2);
+      document.getElementById('kpiTacos').innerText  = Number(k.tacos_hoy||0);
+      document.getElementById('kpiGastos').innerText = '$ ' + Number(k.gastos_hoy||0).toFixed(2);
+      document.getElementById('kpiMeta').innerText   = (k.meta_hoy||0) + ' / ' + (k.cumpl_meta||0) + '%';
+      const bar = document.getElementById('barCumplMeta');
+      if(bar){
+        const v = (k.cumpl_meta||0);
+        bar.style.width = v + '%';
+        bar.setAttribute('aria-valuenow', v);
+      }
     });
-  }
-})();
+
+  fetch('ajax/dashboard.ajax.php?action=ventas_horas')
+    .then(r=>r.json()).then(renderVentasHoras);
+
+  fetch('ajax/dashboard.ajax.php?action=top_productos&limit=5')
+    .then(r=>r.json()).then(renderTopProductos);
+
+  fetch('ajax/dashboard.ajax.php?action=ventas_sucursal')
+    .then(r=>r.json()).then(renderVentasSucursal);
+
+  fetch('ajax/dashboard.ajax.php?action=progreso_metas')
+    .then(r=>r.json()).then(renderProgresoMetas);
+}
+
+document.addEventListener('DOMContentLoaded', cargarDashboard);
