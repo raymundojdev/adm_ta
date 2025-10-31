@@ -15,3 +15,4 @@
 <script src="views/js/gastos.js"></script>
 <script src="views/js/metas_tacos.js"></script>
 <script src="views/js/venta.js"></script>
+<script src="views/js/dashboard.js"></script>

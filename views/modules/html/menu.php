@@ -11,9 +11,9 @@
                 <?php if ($role == 'Administrador'): ?>
                     <!-- Deja "Inicio" accesible al primer nivel -->
                     <li>
-                        <a href="inicio" class="waves-effect">
+                        <a href="dashboard" class="waves-effect">
                             <i class="ri-map-pin-line"></i>
-                            <span>Inicio</span>
+                            <span>Dashboard</span>
                         </a>
                     </li>
 

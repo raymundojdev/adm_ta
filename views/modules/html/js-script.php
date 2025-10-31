@@ -24,6 +24,7 @@
 <script src="views/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
 <script src="views/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
 <script src="views/assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <script src="views/assets/libs/jszip/jszip.min.js"></script>
 <script src="views/assets/libs/pdfmake/build/pdfmake.min.js"></script>
