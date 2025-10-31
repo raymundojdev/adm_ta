@@ -13,3 +13,4 @@
 <script src="views/js/pagos.js"></script>
 <script src="views/js/cortes_caja.js"></script>
 <script src="views/js/gastos.js"></script>
+<script src="views/js/metas_tacos.js"></script>

@@ -39,6 +39,7 @@ session_start();
                 $_GET["url"] == "pedidos" ||
                 $_GET["url"] == "compras" ||
                 $_GET["url"] == "cortes_caja" ||
+                $_GET["url"] == "metas_tacos" ||
                 $_GET["url"] == "pagos" ||
                 $_GET["url"] == "gastos" ||
                 $_GET["url"] == "404" ||

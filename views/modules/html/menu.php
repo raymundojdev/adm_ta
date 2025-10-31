@@ -1,154 +1,113 @@
 <div class="vertical-menu">
-
     <div data-simplebar class="h-100">
-
-        <!--- Sidemenu -->
         <div id="sidebar-menu">
-            <!-- Left Menu Start -->
             <ul class="metismenu list-unstyled" id="side-menu">
                 <li class="menu-title">Menu</li>
 
                 <?php
-                $role = $_SESSION['perfil']; // Assuming the user role is stored in the session
+                $role = $_SESSION['perfil']; // rol desde la sesión
                 ?>
 
                 <?php if ($role == 'Administrador'): ?>
-                <li>
-                    <a href="usuarios" class="waves-effect">
-                        <i class="ri-user-line"></i>
-                        <span>Usuarios</span>
-                    </a>
-                </li>
-
+                <!-- Deja "Inicio" accesible al primer nivel -->
                 <li>
                     <a href="inicio" class="waves-effect">
                         <i class="ri-map-pin-line"></i>
                         <span>Inicio</span>
                     </a>
                 </li>
-                <li>
-                    <a href="sucursales" class="waves-effect">
-                        <i class="ri-government-line"></i>
-                        <span>Sucursales</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="categorias" class="waves-effect">
-                        <i class="ri-folder-2-line"></i>
-                        <span>Categorías</span>
-                    </a>
-                </li>
 
-                <li>
-                    <a href="promociones" class="waves-effect">
-                        <i class="ri-price-tag-2-line"></i>
-                        <span>Promociones</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="clientes" class="waves-effect">
-                        <i class="ri-user-3-line"></i>
-                        <span>Clientes</span>
-                    </a>
-                </li>
-
-                <li>
-
-
-                    <a href="proveedores" class="waves-effect">
-                        <i class="ri-government-line"></i>
-                        <span>Proveedores</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="productos" class="waves-effect">
-                        <i class="ri-government-line"></i>
-                        <span>Productos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="pedidos" class="waves-effect">
-                        <i class="ri-shopping-bag-line"></i>
-                        <span>Pedidos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="pagos" class="waves-effect">
-                        <i class="ri-money-dollar-box-line"></i>
-                        <span>Pagos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="cortes_caja" class="waves-effect">
-                        <i class="ri-wallet-3-line"></i>
-                        <span>Cortes de caja</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="gastos" class="waves-effect">
-                        <i class="ri-file-dollar-line"></i>
-                        <span>Gastos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="compras" class="waves-effect">
-                        <i class="ri-shopping-cart-line"></i>
-                        <span>Compras</span>
-                    </a>
-                    <?php endif; ?>
-
-                    <?php if ($role == 'Administrador' || $role == 'Jefe de cuartel' || $role == 'Jefe de manzana'): ?>
-                <li>
-                    <a href="reportes" class="waves-effect">
-                        <i class="ri-file-list-line"></i>
-                        <span>Reportes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="captura" class="waves-effect">
-                        <i class="ri-file-list-line"></i>
-                        <span>Captura</span>
-                    </a>
-                </li>
-
-                <?php endif; ?>
-
+                <!-- Usa "Layouts" como contenedor para ANIDAR módulos -->
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="ri-layout-3-line"></i>
                         <span>Layouts</span>
                     </a>
-                    <ul class="sub-menu" aria-expanded="true">
+
+                    <ul class="sub-menu" aria-expanded="false">
+                        <!-- Grupo: Ventas -->
                         <li>
-                            <a href="javascript: void(0);" class="has-arrow">Vertical</a>
-                            <ul class="sub-menu" aria-expanded="true">
-                                <li><a href="layouts-light-sidebar.html">Light Sidebar</a></li>
-                                <li><a href="layouts-compact-sidebar.html">Compact Sidebar</a></li>
-                                <li><a href="layouts-icon-sidebar.html">Icon Sidebar</a></li>
-                                <li><a href="layouts-boxed.html">Boxed Layout</a></li>
-                                <li><a href="layouts-preloader.html">Preloader</a></li>
-                                <li><a href="layouts-colored-sidebar.html">Colored Sidebar</a></li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-shopping-bag-line"></i>
+                                Ventas</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="pedidos"><i class="ri-shopping-bag-line"></i> Pedidos</a></li>
+                                <li><a href="pagos"><i class="ri-money-dollar-box-line"></i> Pagos</a></li>
                             </ul>
                         </li>
 
+                        <!-- Grupo: Caja -->
                         <li>
-                            <a href="javascript: void(0);" class="has-arrow">Horizontal</a>
-                            <ul class="sub-menu" aria-expanded="true">
-                                <li><a href="layouts-horizontal.html">Horizontal</a></li>
-                                <li><a href="layouts-hori-topbar-light.html">Topbar light</a></li>
-                                <li><a href="layouts-hori-boxed-width.html">Boxed width</a></li>
-                                <li><a href="layouts-hori-preloader.html">Preloader</a></li>
-                                <li><a href="layouts-hori-colored-header.html">Colored Header</a></li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-wallet-3-line"></i> Caja</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="cortes_caja"><i class="ri-wallet-3-line"></i> Cortes de caja</a></li>
+                                <li><a href="gastos"><i class="ri-file-dollar-line"></i> Gastos</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Grupo: Compras -->
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-shopping-cart-line"></i>
+                                Compras</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="compras"><i class="ri-shopping-cart-line"></i> Compras</a></li>
+                                <li><a href="proveedores"><i class="ri-government-line"></i> Proveedores</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Grupo: Catálogo -->
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-folder-2-line"></i>
+                                Catálogo</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="productos"><i class="ri-government-line"></i> Productos</a></li>
+                                <li><a href="categorias"><i class="ri-folder-2-line"></i> Categorías</a></li>
+                                <li><a href="promociones"><i class="ri-price-tag-2-line"></i> Promociones</a></li>
+                                <li><a href="clientes"><i class="ri-user-3-line"></i> Clientes</a></li>
+                                <li><a href="sucursales"><i class="ri-government-line"></i> Sucursales</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Grupo: Metas -->
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="fas fa-bullseye"></i> Metas</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="metas_tacos"><i class="fas fa-bullseye"></i> Metas de Tacos</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Grupo: Administración -->
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-user-line"></i>
+                                Administración</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="usuarios"><i class="ri-user-line"></i> Usuarios</a></li>
                             </ul>
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
-
+                <!-- Acceso Operativo para Admin / Jefe de cuartel / Jefe de manzana EN “Layouts” también -->
+                <?php if ($role == 'Administrador' || $role == 'Jefe de cuartel' || $role == 'Jefe de manzana'): ?>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="ri-layout-3-line"></i>
+                        <span>Layouts</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow"><i class="ri-file-list-line"></i>
+                                Operación</a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="reportes"><i class="ri-file-list-line"></i> Reportes</a></li>
+                                <li><a href="captura"><i class="ri-file-list-line"></i> Captura</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <?php endif; ?>
 
             </ul>
         </div>
-        <!-- Sidebar -->
     </div>
 </div>

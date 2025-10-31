@@ -44,6 +44,8 @@ require_once "models/cortes.model.php";
 require_once "controllers/gastos.controller.php";
 require_once "models/gastos.model.php";
 
+require_once "controllers/metas_tacos.controller.php";
+require_once "models/metas_tacos.model.php";
 // require_once "controllers/compras.controller.php";
 // require_once "models/compras.model.php";
 
